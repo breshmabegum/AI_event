@@ -1,0 +1,7 @@
+streamlit
+qrcode
+opencv-python-headless
+numpy
+insightface
+onnxruntime
+Pillow
