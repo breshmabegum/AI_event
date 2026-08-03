@@ -78,7 +78,7 @@ if st.button("Upload"):
 if st.button("Generate QR Code"):
     os.makedirs("qrcodes", exist_ok=True)
 
-    url = f"https://aievent-h73cwd74dkwumvhmlemrhu.streamlit.app/?event={event_name}"
+    url = f"https://aievent-mskmt4gfzymwacaryet45u.streamlit.app/?event={event_name}"
     st.write(url)
 
     img = qrcode.make(url)
