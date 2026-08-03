@@ -78,11 +78,12 @@ for photo in photos:
 
         print(image_url, "Similarity:", round(similarity, 2))
 
-        # if similarity >= 0.50:
-        if similarity >= 0.50:
-            matched_photos.append(image_url)
-            print("✅ MATCH FOUND:", image_url)
-            break
+        THRESHOLD = 0.75 
+        if similarity >= THRESHOLD:
+            if image_url not in matched_photos:
+                matched_photos.append(image_url)
+                print(f"✅ MATCH FOUND: {image_url}  Score: {similarity:.2f}")
+                break
 
 print("\nMatched Photos:", len(matched_photos))
 
