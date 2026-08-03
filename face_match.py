@@ -1,84 +1,9 @@
 
-# import os
-# import cv2
-# import numpy as np
-# from insightface.app import FaceAnalysis
-
-# app = FaceAnalysis(name="buffalo_l")
-# app.prepare(ctx_id=-1)
-
-# files = os.listdir("selfies")
-
-# if len(files) == 0:
-#     print("No selfie found")
-#     exit()
-
-# selfie_path = os.path.join("selfies", files[0])
-
-# selfie = cv2.imread(selfie_path)
-
-# if selfie is None:
-#     print("Cannot load selfie")
-#     exit()
-
-# selfie_faces = app.get(selfie)
-
-# if len(selfie_faces) == 0:
-#     print("No face detected")
-#     exit()
-
-# selfie_embedding = selfie_faces[0].embedding
-
-# matched_photos = []
-# print("Checking uploaded photos...\n")
-
-# for file in os.listdir("uploads"):
-
-#     if not file.lower().endswith((".jpg", ".jpeg", ".png")):
-#         continue
-
-#     img_path = os.path.join("uploads", file)
-#     img = cv2.imread(img_path)
-
-#     if img is None:
-#         continue
-
-#     faces = app.get(img)
-
-#     if len(faces) == 0:
-#         continue
-
-#     for face in faces:
-
-#         similarity = np.dot(
-#             selfie_embedding,
-#             face.embedding
-#         ) / (
-#             np.linalg.norm(selfie_embedding)
-#             * np.linalg.norm(face.embedding)
-#         )
-
-#         print(file, "Similarity:", round(similarity, 2))
-
-#         if similarity >= 0.50:
-#             matched_photos.append(file)
-#             print("MATCH FOUND:", file)
-#             break
-
-# print("\nMatched Photos:")
-
-# if len(matched_photos) == 0:
-#     print("No matching photos found.")
-# else:
-#     for photo in matched_photos:
-#         print(photo)
-# with open("matched.txt", "w") as f:
-#     for photo in matched_photos:
-#         f.write(photo + "\n")
 from PIL import Image
 import io
 import os
 import cv2
+import sys
 import numpy as np
 import requests
 import cloudinary
@@ -89,6 +14,7 @@ print(cloudinary.config().cloud_name)
 from insightface.app import FaceAnalysis
 app = FaceAnalysis(name="buffalo_l")
 app.prepare(ctx_id=-1)
+
 files = os.listdir("selfies")
 
 if len(files) == 0:
@@ -108,9 +34,10 @@ if len(selfie_faces) == 0:
     exit()
 
 selfie_embedding = selfie_faces[0].embedding
+event_name = sys.argv[1]
 resources = cloudinary.api.resources(
     type="upload",
-    prefix="wedding",
+    prefix=event_name,
     max_results=100
 )
 
@@ -151,6 +78,7 @@ for photo in photos:
 
         print(image_url, "Similarity:", round(similarity, 2))
 
+        # if similarity >= 0.50:
         if similarity >= 0.50:
             matched_photos.append(image_url)
             print("✅ MATCH FOUND:", image_url)

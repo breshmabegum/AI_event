@@ -1,7 +1,10 @@
 import streamlit as st
 import os
+import sys
 import subprocess
 import requests
+from PIL import Image
+from io import BytesIO
 st.set_page_config(page_title="AI Event Photo Finder", page_icon="📸")
 
 st.title("📸 AI Event Photo Finder")
@@ -30,35 +33,36 @@ if selfie is not None:
         f.write(selfie.getbuffer())
 
     st.success("Selfie Uploaded Successfully!")
-    # st.image(selfie)
+    st.write("Selfie saved:", selfie_path)
+    st.image(selfie)
     
 # Find My Photos
 if st.button("Find My Photos"):
 
     result = subprocess.run(
-        ["python", "face_match.py",event_name],
+        [sys.executable, "face_match.py", event_name],
         capture_output=True,
         text=True
     )
 
-    st.text(result.stdout)
+    # st.text(result.stdout)
+    # st.text(result.stderr)
+    # st.write(result.returncode)
 
     if os.path.exists("matched.txt"):
 
         with open("matched.txt", "r") as f:
             photos = f.read().splitlines()
-
-        if len(photos) > 0:
-
-            st.success("Matched Photos")
-            for photo in photos:
-                st.image(photo, caption="Matched Photo", width=300)
-                st.download_button(
-                    label="Download Photo",
-                    data=requests.get(photo).content,
-                    file_name="matched_photo.jpg",
-                    mime="image/jpeg"
-                    )
-
-        else:
+            if len(photos) > 0:
+                st.success("Matched Photos")
+                for photo in photos:
+                    st.write(photo)
+                    response = requests.get(photo)
+                    if response.status_code == 200:
+                        image = Image.open(BytesIO(response.content))
+                        st.image(image, caption="Matched Photo", use_container_width=True)
+                        st.download_button("Download Photo",data=response.content,file_name="matched_photo.jpg",mime="image/jpeg")
+                    else:
+                        st.error("Image not loaded")
+    else:
             st.warning("No matching photos found.")
