@@ -61,7 +61,7 @@ if st.button("Find My Photos"):
                     if response.status_code == 200:
                         image = Image.open(BytesIO(response.content))
                         st.image(image, caption="Matched Photo", use_container_width=True)
-                        st.download_button("Download Photo",data=response.content,file_name="matched_photo.jpg",mime="image/jpeg")
+                        st.download_button(label="Download Photo",data=response.content,file_name=os.path.basename(photo),mime="image/jpeg",key=photo)
                     else:
                         st.error("Image not loaded")
     else:
